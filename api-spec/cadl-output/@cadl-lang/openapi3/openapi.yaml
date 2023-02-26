@@ -1,0 +1,462 @@
+openapi: 3.0.0
+info:
+  title: TRIM Middletier API
+  version: 1.0.0
+  description: TRIM Inventory API specification.
+tags:
+  - name: Inventory
+paths:
+  /Inventory:
+    get:
+      tags:
+        - Inventory
+      operationId: IInventory_list
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Inventory'
+                    x-cadl-name: Inventory[]
+                    description: List of elements
+                  nextLink:
+                    type: string
+                    format: uri
+                    description: A link to the next page of results if present.
+                required:
+                  - value
+                x-cadl-name: List<Inventory>
+        default:
+          description: An unexpected error response.
+          headers:
+            x-ms-error-code:
+              required: true
+              description: A server-defined code that uniquely identifies the error.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Inventory
+      operationId: IInventory_create
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        default:
+          description: An unexpected error response.
+          headers:
+            x-ms-error-code:
+              required: true
+              description: A server-defined code that uniquely identifies the error.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Inventory'
+    patch:
+      tags:
+        - Inventory
+      operationId: IInventory_update
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        default:
+          description: An unexpected error response.
+          headers:
+            x-ms-error-code:
+              required: true
+              description: A server-defined code that uniquely identifies the error.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/InventoryUpdate'
+  /Inventory/Decommission/{serviceId}:
+    post:
+      tags:
+        - Inventory
+      operationId: IInventory_decommission
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '204':
+          description: >-
+            There is no content to send for this request, but the headers may be
+            useful. 
+        default:
+          description: An unexpected error response.
+          headers:
+            x-ms-error-code:
+              required: true
+              description: A server-defined code that uniquely identifies the error.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /Inventory/{id}:
+    get:
+      tags:
+        - Inventory
+      operationId: IInventory_read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        default:
+          description: An unexpected error response.
+          headers:
+            x-ms-error-code:
+              required: true
+              description: A server-defined code that uniquely identifies the error.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  parameters:
+    ApiVersion:
+      name: api-version
+      in: query
+      required: true
+      description: The version of the API in the form YYYY-MM-DD
+      schema:
+        type: string
+  schemas:
+    ApiVersion:
+      type: object
+      properties: {}
+    Error:
+      type: object
+      properties:
+        error:
+          allOf:
+            - $ref: '#/components/schemas/ErrorDetail'
+          description: Top-level error object
+      description: Error response
+      required:
+        - error
+    ErrorDetail:
+      type: object
+      properties:
+        code:
+          type: string
+          description: A server-defined code that uniquely identifies the error.
+        message:
+          type: string
+          description: A human-readable representation of the error.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          x-cadl-name: ErrorDetail[]
+          description: >-
+            An array of details about specific errors that led to this reported
+            error.
+      description: Error details
+      required:
+        - code
+        - message
+    Inventory:
+      type: object
+      properties:
+        RFSDate:
+          type: string
+          format: date
+          description: Ready for service date specific to the inventory item.
+        Bandwidth:
+          type: string
+          description: Bandwidth value specific to the inventory item.
+        TransitNetworkISPandMSFT:
+          type: string
+          description: Transit network IP between IST and Microsoft.
+        TransitNetworkMask:
+          type: string
+          description: Transit network mask.
+        CktHandsOffMediaType:
+          type: string
+          description: Circuit hands off media type.
+        MSFTAddressOnTransitNetwork:
+          type: string
+          description: Microsoft address on transit network.
+        DefaultRouteOnTransitNetwork:
+          type: string
+          description: Default route on transit network.
+        StaticallyRounded:
+          type: string
+          description: Statically Rounded.
+        ALocation:
+          allOf:
+            - $ref: '#/components/schemas/InventoryLocation'
+          description: Inventory 'A' location details.
+        ZLocation:
+          allOf:
+            - $ref: '#/components/schemas/InventoryLocation'
+          description: Inventory 'Z' location details.
+      description: Inventory specific details.
+      required:
+        - RFSDate
+      allOf:
+        - $ref: '#/components/schemas/InventoryBase'
+    InventoryBase:
+      type: object
+      properties:
+        QuoteId:
+          type: string
+          description: Unique quote Id provided by the supplier during contracting process.
+        QuoteReferenceId:
+          type: string
+          description: >-
+            Unique line level inventory reference quote Id provided by the
+            supplier during contracting process.
+        ServiceId:
+          type: string
+          description: >-
+            Unique service id for the inventory. The combination of 'QuoteId',
+            'QuoteReferenceId' and 'ServiceId' needs to be unique.
+        ServiceType:
+          type: string
+          enum:
+            - BulkCable
+            - CrossConnect
+            - DIA
+            - LongHaulDarkFiber
+            - LongHaulLIT
+            - MetroDarkFiber
+            - MetroLIT
+            - RENT
+            - POWER
+          x-cadl-name: >-
+            BulkCable | CrossConnect | DIA | LongHaulDarkFiber | LongHaulLIT |
+            MetroDarkFiber | MetroLIT | RENT | POWER
+          description: >-
+            Inventory specific servie type requested on original order (Purchase
+            Order).
+      description: Inventory base properties.
+      required:
+        - QuoteId
+        - QuoteReferenceId
+        - ServiceId
+        - ServiceType
+    InventoryBaseUpdate:
+      type: object
+      properties:
+        QuoteId:
+          type: string
+          description: Unique quote Id provided by the supplier during contracting process.
+        QuoteReferenceId:
+          type: string
+          description: >-
+            Unique line level inventory reference quote Id provided by the
+            supplier during contracting process.
+        ServiceId:
+          type: string
+          description: >-
+            Unique service id for the inventory. The combination of 'QuoteId',
+            'QuoteReferenceId' and 'ServiceId' needs to be unique.
+        ServiceType:
+          type: string
+          enum:
+            - BulkCable
+            - CrossConnect
+            - DIA
+            - LongHaulDarkFiber
+            - LongHaulLIT
+            - MetroDarkFiber
+            - MetroLIT
+            - RENT
+            - POWER
+          x-cadl-name: >-
+            BulkCable | CrossConnect | DIA | LongHaulDarkFiber | LongHaulLIT |
+            MetroDarkFiber | MetroLIT | RENT | POWER
+          description: >-
+            Inventory specific servie type requested on original order (Purchase
+            Order).
+      description: Inventory base properties.
+    InventoryLocation:
+      type: object
+      properties:
+        Port:
+          type: string
+          description: Location Port Details.
+        Connector:
+          type: string
+          description: Location Connector Details.
+        Panel:
+          type: string
+          description: Location Panel Details.
+        Device:
+          type: string
+          description: Location Device Details.
+        Rack:
+          type: string
+          description: Location Rack Details.
+        Cage:
+          type: string
+          description: Location Cage Details.
+        Room:
+          type: string
+          description: Location Room Details.
+        BuildingName:
+          type: string
+          description: Location Building Details.
+        MSFTDCCode:
+          type: string
+          description: Location Microsoft Datacenter Details.
+      description: Inventory specific location details.
+      required:
+        - Port
+        - Connector
+        - Panel
+        - Device
+        - Rack
+        - Cage
+        - Room
+        - BuildingName
+        - MSFTDCCode
+    InventoryLocationUpdate:
+      type: object
+      properties:
+        Port:
+          type: string
+          description: Location Port Details.
+        Connector:
+          type: string
+          description: Location Connector Details.
+        Panel:
+          type: string
+          description: Location Panel Details.
+        Device:
+          type: string
+          description: Location Device Details.
+        Rack:
+          type: string
+          description: Location Rack Details.
+        Cage:
+          type: string
+          description: Location Cage Details.
+        Room:
+          type: string
+          description: Location Room Details.
+        BuildingName:
+          type: string
+          description: Location Building Details.
+        MSFTDCCode:
+          type: string
+          description: Location Microsoft Datacenter Details.
+      description: Inventory specific location details.
+    InventoryPackage:
+      type: object
+      properties:
+        MessageId:
+          type: string
+          description: Unique Message Id. Used for all support/troubleshooting reasons.
+        MessageType:
+          type: string
+          enum:
+            - Inventory
+          description: Message type. Validated and used for internal system processing.
+        SendingParty:
+          type: string
+          description: >-
+            Microsoft desginated supplier Id for the inventory related order
+            (Purchase Order).
+      description: >-
+        Inventory Message comprised of message header and individual inventory
+        items.
+      required:
+        - MessageId
+        - MessageType
+        - SendingParty
+    InventoryUpdate:
+      type: object
+      properties:
+        RFSDate:
+          type: string
+          format: date
+          description: Ready for service date specific to the inventory item.
+        Bandwidth:
+          type: string
+          description: Bandwidth value specific to the inventory item.
+        TransitNetworkISPandMSFT:
+          type: string
+          description: Transit network IP between IST and Microsoft.
+        TransitNetworkMask:
+          type: string
+          description: Transit network mask.
+        CktHandsOffMediaType:
+          type: string
+          description: Circuit hands off media type.
+        MSFTAddressOnTransitNetwork:
+          type: string
+          description: Microsoft address on transit network.
+        DefaultRouteOnTransitNetwork:
+          type: string
+          description: Default route on transit network.
+        StaticallyRounded:
+          type: string
+          description: Statically Rounded.
+        ALocation:
+          allOf:
+            - $ref: '#/components/schemas/InventoryLocationUpdate'
+          description: Inventory 'A' location details.
+        ZLocation:
+          allOf:
+            - $ref: '#/components/schemas/InventoryLocationUpdate'
+          description: Inventory 'Z' location details.
+      description: Inventory specific details.
+      allOf:
+        - $ref: '#/components/schemas/InventoryBaseUpdate'
