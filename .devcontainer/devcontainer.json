@@ -10,6 +10,7 @@
 			"extensions": [
 				"ms-vscode.azurecli",
 				"42crunch.vscode-openapi",
+				"ms-dotnettools.vscode-dotnet-runtime",
 			]
 		}
 	},
@@ -18,14 +19,16 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	 "postCreateCommand": "npm install -g @cadl-lang/compiler && npm install cadl-vscode",
+	 "postCreateCommand": "npm install -g @cadl-lang/compiler && npm install cadl-vscode && npm install -g autorest",
 
 	// Uncomment when using a ptrace-based debugger like C++, Go, and Rust
 	// "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
-
+    // cadl code install
+	//npm install -g autorest
 	// Set `remoteUser` to `root` to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
 	"features": {
-		"ghcr.io/devcontainers/features/node:1": {}
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/devcontainers/features/dotnet:1": {}
 	}
 }
