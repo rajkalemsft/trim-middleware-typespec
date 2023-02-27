@@ -1,0 +1,29 @@
+@doc("Inventory specific location details.")
+model InventoryLocation {
+  @doc("Location Port Details.")
+  Port? : string;
+
+  @doc("Location Connector Details.")
+  Connector?: string;
+
+  @doc("Location Panel Details.")
+  Panel? : string;
+
+  @doc("Location Device Details.")
+  Device? : string;
+
+  @doc("Location Rack Details.")
+  Rack? : string;
+
+  @doc("Location Cage Details.")
+  Cage? : string;
+
+  @doc("Location Room Details.")
+  Room? : string;
+
+  @doc("Location Building Details.")
+  BuildingName? : string;
+
+  @doc("Location Microsoft Datacenter Details.")
+  MSFTDCCode? : string;
+}

@@ -1,0 +1,10 @@
+import "./message-request.cadl";
+import "./error.cadl";
+
+@doc("Message comprised of message header and individual inventory items.")
+model MessageResponse extends MessageRequest{
+  @doc("Response message content.")
+  ResponsePayload: string;
+  @doc("Messsage processing result.")
+  Error: Error;
+}

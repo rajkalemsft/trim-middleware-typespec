@@ -1,0 +1,9 @@
+@doc("Message comprised of message header and individual inventory items.")
+model MessageRequest{
+  @doc("Unique message id. Used for all support/troubleshooting reasons.")
+  MessageId: string;
+  @doc("Message type. Validated and used for internal system processing.")
+  MessageType: string;
+  @doc("Request message Content.")
+  RequestPayload: string;
+}

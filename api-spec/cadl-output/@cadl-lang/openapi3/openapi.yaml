@@ -1,72 +1,27 @@
 openapi: 3.0.0
 info:
-  title: TRIM Middletier API
+  title: Microsoft TRIM Inventory API specification.
   version: 1.0.0
-  description: TRIM Inventory API specification.
-tags:
-  - name: Inventory
+  description: Microsoft TRIM Inventory API specification.
+tags: []
 paths:
-  /Inventory:
-    get:
-      tags:
-        - Inventory
-      operationId: IInventory_list
-      parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  value:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Inventory'
-                    x-cadl-name: Inventory[]
-                    description: List of elements
-                  nextLink:
-                    type: string
-                    format: uri
-                    description: A link to the next page of results if present.
-                required:
-                  - value
-                x-cadl-name: List<Inventory>
-        default:
-          description: An unexpected error response.
-          headers:
-            x-ms-error-code:
-              required: true
-              description: A server-defined code that uniquely identifies the error.
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+  /inventory:
     put:
-      tags:
-        - Inventory
-      operationId: IInventory_create
+      operationId: inventoryResource_create
+      description: Create new inventory for the specific QuoteId and QuoteReferenceId.
       parameters:
         - $ref: '#/components/parameters/ApiVersion'
       responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Inventory'
+        '202':
+          description: >-
+            The request has been accepted for processing, but processing has not
+            yet completed.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '401':
+          description: Access is unauthorized.
         default:
           description: An unexpected error response.
-          headers:
-            x-ms-error-code:
-              required: true
-              description: A server-defined code that uniquely identifies the error.
-              schema:
-                type: string
           content:
             application/json:
               schema:
@@ -75,42 +30,39 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Inventory'
+              $ref: '#/components/schemas/InventoryPackage'
     patch:
-      tags:
-        - Inventory
-      operationId: IInventory_update
+      operationId: inventoryResource_update
+      description: >-
+        Update inventory. This operation allows non-mandatory field updates for
+        an existing inventory. Key inventory fields like (QuoteId,
+        QuoteReferenceId, ServiceId) cannot be updated using this operation.
       parameters:
         - $ref: '#/components/parameters/ApiVersion'
       responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Inventory'
+        '202':
+          description: >-
+            The request has been accepted for processing, but processing has not
+            yet completed.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '401':
+          description: Access is unauthorized.
         default:
           description: An unexpected error response.
-          headers:
-            x-ms-error-code:
-              required: true
-              description: A server-defined code that uniquely identifies the error.
-              schema:
-                type: string
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
       requestBody:
         content:
-          application/merge-patch+json:
+          application/json:
             schema:
-              $ref: '#/components/schemas/InventoryUpdate'
-  /Inventory/Decommission/{serviceId}:
+              $ref: '#/components/schemas/InventoryPackageUpdate'
+  /inventory/decommission/{serviceId}:
     post:
-      tags:
-        - Inventory
-      operationId: IInventory_decommission
+      operationId: inventoryResource_decommission
+      description: Decommission inventory for a specific service id.
       parameters:
         - name: serviceId
           in: path
@@ -119,29 +71,26 @@ paths:
             type: string
         - $ref: '#/components/parameters/ApiVersion'
       responses:
-        '204':
+        '202':
           description: >-
-            There is no content to send for this request, but the headers may be
-            useful. 
+            The request has been accepted for processing, but processing has not
+            yet completed.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '401':
+          description: Access is unauthorized.
         default:
           description: An unexpected error response.
-          headers:
-            x-ms-error-code:
-              required: true
-              description: A server-defined code that uniquely identifies the error.
-              schema:
-                type: string
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /Inventory/{id}:
+  /inventory/requeststatus/{messageId}:
     get:
-      tags:
-        - Inventory
-      operationId: IInventory_read
+      operationId: inventoryResource_read
+      description: Get request status by uniqiue messag/correlation Id.
       parameters:
-        - name: id
+        - name: messageId
           in: path
           required: true
           schema:
@@ -153,15 +102,66 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Inventory'
+                $ref: '#/components/schemas/InventoryPackageResponse'
         default:
           description: An unexpected error response.
-          headers:
-            x-ms-error-code:
-              required: true
-              description: A server-defined code that uniquely identifies the error.
+          content:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/Error'
+  /messaging/queuemessage:
+    post:
+      operationId: messagingResource_queuemessage
+      description: >-
+        API endpoint performs required authorization, validates message payload
+        schema per mssage type and respond in synchronous way indicating if the
+        message was accepted or rejected for further processing.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '202':
+          description: >-
+            The request has been accepted for processing, but processing has not
+            yet completed.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '401':
+          description: Access is unauthorized.
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageRequest'
+  /messaging/requeststatus/{messageId}:
+    get:
+      operationId: messagingResource_read
+      description: Get request status by uniqiue messag/correlation Id.
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '401':
+          description: Access is unauthorized.
+        default:
+          description: An unexpected error response.
           content:
             application/json:
               schema:
@@ -176,18 +176,19 @@ components:
       schema:
         type: string
   schemas:
-    ApiVersion:
-      type: object
-      properties: {}
     Error:
       type: object
       properties:
+        code:
+          type: string
+          description: A server-defined code that uniquely identifies the error.
         error:
           allOf:
             - $ref: '#/components/schemas/ErrorDetail'
           description: Top-level error object
       description: Error response
       required:
+        - code
         - error
     ErrorDetail:
       type: object
@@ -291,83 +292,7 @@ components:
         - QuoteReferenceId
         - ServiceId
         - ServiceType
-    InventoryBaseUpdate:
-      type: object
-      properties:
-        QuoteId:
-          type: string
-          description: Unique quote Id provided by the supplier during contracting process.
-        QuoteReferenceId:
-          type: string
-          description: >-
-            Unique line level inventory reference quote Id provided by the
-            supplier during contracting process.
-        ServiceId:
-          type: string
-          description: >-
-            Unique service id for the inventory. The combination of 'QuoteId',
-            'QuoteReferenceId' and 'ServiceId' needs to be unique.
-        ServiceType:
-          type: string
-          enum:
-            - BulkCable
-            - CrossConnect
-            - DIA
-            - LongHaulDarkFiber
-            - LongHaulLIT
-            - MetroDarkFiber
-            - MetroLIT
-            - RENT
-            - POWER
-          x-cadl-name: >-
-            BulkCable | CrossConnect | DIA | LongHaulDarkFiber | LongHaulLIT |
-            MetroDarkFiber | MetroLIT | RENT | POWER
-          description: >-
-            Inventory specific servie type requested on original order (Purchase
-            Order).
-      description: Inventory base properties.
     InventoryLocation:
-      type: object
-      properties:
-        Port:
-          type: string
-          description: Location Port Details.
-        Connector:
-          type: string
-          description: Location Connector Details.
-        Panel:
-          type: string
-          description: Location Panel Details.
-        Device:
-          type: string
-          description: Location Device Details.
-        Rack:
-          type: string
-          description: Location Rack Details.
-        Cage:
-          type: string
-          description: Location Cage Details.
-        Room:
-          type: string
-          description: Location Room Details.
-        BuildingName:
-          type: string
-          description: Location Building Details.
-        MSFTDCCode:
-          type: string
-          description: Location Microsoft Datacenter Details.
-      description: Inventory specific location details.
-      required:
-        - Port
-        - Connector
-        - Panel
-        - Device
-        - Rack
-        - Cage
-        - Room
-        - BuildingName
-        - MSFTDCCode
-    InventoryLocationUpdate:
       type: object
       properties:
         Port:
@@ -401,6 +326,22 @@ components:
     InventoryPackage:
       type: object
       properties:
+        InventoryItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inventory'
+          x-cadl-name: Inventory[]
+          description: Inventory Items.
+      description: >-
+        Inventory Message comprised of message header and individual inventory
+        items.
+      required:
+        - InventoryItems
+      allOf:
+        - $ref: '#/components/schemas/InventoryPackageBase'
+    InventoryPackageBase:
+      type: object
+      properties:
         MessageId:
           type: string
           description: Unique Message Id. Used for all support/troubleshooting reasons.
@@ -421,42 +362,113 @@ components:
         - MessageId
         - MessageType
         - SendingParty
-    InventoryUpdate:
+    InventoryPackageBaseUpdate:
       type: object
       properties:
-        RFSDate:
+        MessageId:
           type: string
-          format: date
-          description: Ready for service date specific to the inventory item.
-        Bandwidth:
+          description: Unique Message Id. Used for all support/troubleshooting reasons.
+        MessageType:
           type: string
-          description: Bandwidth value specific to the inventory item.
-        TransitNetworkISPandMSFT:
+          enum:
+            - Inventory
+          description: Message type. Validated and used for internal system processing.
+        SendingParty:
           type: string
-          description: Transit network IP between IST and Microsoft.
-        TransitNetworkMask:
-          type: string
-          description: Transit network mask.
-        CktHandsOffMediaType:
-          type: string
-          description: Circuit hands off media type.
-        MSFTAddressOnTransitNetwork:
-          type: string
-          description: Microsoft address on transit network.
-        DefaultRouteOnTransitNetwork:
-          type: string
-          description: Default route on transit network.
-        StaticallyRounded:
-          type: string
-          description: Statically Rounded.
-        ALocation:
-          allOf:
-            - $ref: '#/components/schemas/InventoryLocationUpdate'
-          description: Inventory 'A' location details.
-        ZLocation:
-          allOf:
-            - $ref: '#/components/schemas/InventoryLocationUpdate'
-          description: Inventory 'Z' location details.
-      description: Inventory specific details.
+          description: >-
+            Microsoft desginated supplier Id for the inventory related order
+            (Purchase Order).
+      description: >-
+        Inventory Message comprised of message header and individual inventory
+        items.
+    InventoryPackageResponse:
+      type: object
+      properties:
+        InventoryItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryResponse'
+          x-cadl-name: InventoryResponse[]
+          description: Inventory Items.
+      description: >-
+        Inventory Message comprised of message header and individual inventory
+        items.
+      required:
+        - InventoryItems
       allOf:
-        - $ref: '#/components/schemas/InventoryBaseUpdate'
+        - $ref: '#/components/schemas/InventoryPackageBase'
+    InventoryPackageResponseUpdate:
+      type: object
+      properties:
+        InventoryItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryResponse'
+          x-cadl-name: InventoryResponse[]
+          description: Inventory Items.
+      description: >-
+        Inventory Message comprised of message header and individual inventory
+        items.
+      allOf:
+        - $ref: '#/components/schemas/InventoryPackageBaseUpdate'
+    InventoryPackageUpdate:
+      type: object
+      properties:
+        InventoryItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inventory'
+          x-cadl-name: Inventory[]
+          description: Inventory Items.
+      description: >-
+        Inventory Message comprised of message header and individual inventory
+        items.
+      allOf:
+        - $ref: '#/components/schemas/InventoryPackageBaseUpdate'
+    InventoryResponse:
+      type: object
+      properties:
+        Error:
+          allOf:
+            - $ref: '#/components/schemas/Error'
+          description: Inventory processing results.
+      description: Inventory message processing result.
+      allOf:
+        - $ref: '#/components/schemas/Inventory'
+    MessageRequest:
+      type: object
+      properties:
+        MessageId:
+          type: string
+          description: Unique message id. Used for all support/troubleshooting reasons.
+        MessageType:
+          type: string
+          description: Message type. Validated and used for internal system processing.
+        RequestPayload:
+          type: string
+          description: Request message Content.
+      description: Message comprised of message header and individual inventory items.
+      required:
+        - MessageId
+        - MessageType
+        - RequestPayload
+    MessageResponse:
+      type: object
+      properties:
+        ResponsePayload:
+          type: string
+          description: Response message content.
+        Error:
+          allOf:
+            - $ref: '#/components/schemas/Error'
+          description: Messsage processing result.
+      description: Message comprised of message header and individual inventory items.
+      required:
+        - ResponsePayload
+        - Error
+      allOf:
+        - $ref: '#/components/schemas/MessageRequest'
+servers:
+  - url: https://api.trim.microsoft.com
+    description: Microsoft TRIM API server.
+    variables: {}

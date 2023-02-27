@@ -1,0 +1,33 @@
+import "../models/inventory-base.cadl";
+import "../models/inventory-location.cadl";
+import "../models/inventory-package.cadl";
+import "../models/inventory-package-response.cadl";
+import "../models/inventory.cadl";
+import "../models/apiversion.cadl";
+import "../models/error.cadl";
+import "../models/errordetail.cadl";
+
+using Cadl.Http;
+namespace trim.middleware.inventory;
+
+
+interface ResourceInterface<T> {
+    @doc("Create new inventory for the specific QuoteId and QuoteReferenceId.")
+    @put create(...T, ...ApiVersion): AcceptedResponse | UnauthorizedResponse | BadRequestResponse | Error;
+
+    @doc("Update inventory. This operation allows non-mandatory field updates for an existing inventory. Key inventory fields like (QuoteId, QuoteReferenceId, ServiceId) cannot be updated using this operation.")
+    @patch update(...T, ...ApiVersion):  AcceptedResponse | UnauthorizedResponse | BadRequestResponse | Error;
+}
+
+
+@route("/inventory")
+@tag("InventoryService")
+interface InventoryService extends ResourceInterface<InventoryPackage> {
+    @doc("Get request status by uniqiue messag/correlation Id.")
+    @route("/requeststatus")
+    @get read(@path messageId: string, ...ApiVersion): InventoryPackageResponse | Error;
+
+    @doc("Decommission inventory for a specific service id.")
+    @route("/decommission")
+    @post decommission(@path serviceId: string,...ApiVersion): AcceptedResponse | UnauthorizedResponse | BadRequestResponse | Error;
+}

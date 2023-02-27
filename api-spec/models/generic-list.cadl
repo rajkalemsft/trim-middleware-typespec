@@ -1,0 +1,6 @@
+/*model List<T> {
+    @doc("List of elements")
+    value: T[];
+    @doc("A link to the next page of results if present.")
+    nextLink?: url;
+}*/

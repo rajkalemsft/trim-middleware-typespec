@@ -1,0 +1,8 @@
+@error
+@doc("Error response")
+model Error {
+    @doc("A server-defined code that uniquely identifies the error.")
+    code: string;
+    @doc("Top-level error object")
+    error: ErrorDetail;
+}

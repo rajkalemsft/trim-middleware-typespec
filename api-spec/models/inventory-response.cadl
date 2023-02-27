@@ -1,0 +1,8 @@
+import "./inventory.cadl";
+import "./error.cadl";
+
+@doc("Inventory message processing result.")
+model InventoryResponse extends Inventory {
+  @doc("Inventory processing results.")
+  Error? : Error;
+}

@@ -1,0 +1,14 @@
+@doc("Inventory base properties.")
+model InventoryBase {
+  @doc("Unique quote Id provided by the supplier during contracting process.")
+  QuoteId: string;
+
+  @doc("Unique line level inventory reference quote Id provided by the supplier during contracting process.")
+  QuoteReferenceId: string;
+
+  @doc("Unique service id for the inventory. The combination of 'QuoteId', 'QuoteReferenceId' and 'ServiceId' needs to be unique.")
+  ServiceId: string;
+
+  @doc("Inventory specific servie type requested on original order (Purchase Order).")
+  ServiceType: "BulkCable" | "CrossConnect" | "DIA" | "LongHaulDarkFiber" | "LongHaulLIT" | "MetroDarkFiber" | "MetroLIT" | "RENT" | "POWER";
+}

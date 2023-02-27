@@ -1,0 +1,7 @@
+import "./inventory-response.cadl";
+
+@doc("Inventory Message comprised of message header and individual inventory items.")
+model InventoryPackageResponse extends InventoryPackageBase {
+  @doc("Inventory Items.")
+  InventoryItems : InventoryResponse[];
+}

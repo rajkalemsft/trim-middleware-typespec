@@ -1,0 +1,6 @@
+using Cadl.Http;
+
+model ApiVersion {
+    @doc("The version of the API in the form YYYY-MM-DD")
+    @query("api-version") apiVersion: string;
+}

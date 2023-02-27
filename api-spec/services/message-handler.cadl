@@ -1,0 +1,21 @@
+import "../models/message-request.cadl";
+import "../models/message-response.cadl";
+import "../models/apiversion.cadl";
+import "../models/error.cadl";
+import "../models/errordetail.cadl";
+
+using Cadl.Http;
+namespace trim.middleware.messaging;
+
+
+@route("/MessageHandler")
+@tag("MessageService")
+interface MessageService {
+    @doc("Get request status by uniqiue messag/correlation Id.")
+    @route("/requeststatus")
+    @get read(@path messageId: string, ...ApiVersion): MessageResponse | BadRequestResponse | UnauthorizedResponse | Error;
+
+    @doc("API endpoint performs required authorization, validates message payload schema per mssage type and respond in synchronous way indicating if the message was accepted or rejected for further processing.")
+    @route("/queuemessage")
+    @post queuemessage(...MessageRequest,...ApiVersion): AcceptedResponse | BadRequestResponse | UnauthorizedResponse | Error;
+}

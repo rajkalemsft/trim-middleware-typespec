@@ -1,152 +1,31 @@
 
 import "@cadl-lang/rest";
-using Cadl.Http;
+import "./services/inventory.cadl";
+import "./services/message-handler.cadl";
 
-@doc("TRIM Inventory API specification.")
+
+using Cadl.Http;
+using trim.middleware.inventory;
+using trim.middleware.messaging;
+
+@doc("Microsoft TRIM Inventory API specification.")
 @service({
-  title: "TRIM Middletier API",
+  title: "Microsoft TRIM Inventory API specification.",
   version: "1.0.0",
+  contact: {
+    name: "",
+    url: ""
+  }
 })
 
-namespace trim.middletier;
+@server("https://api.trim.microsoft.com", "Microsoft TRIM API server.")
 
-@doc("Inventory Message comprised of message header and individual inventory items.")
-model InventoryPackage{
-  @doc("Unique Message Id. Used for all support/troubleshooting reasons.")
-  MessageId: string;
-  @doc("Message type. Validated and used for internal system processing.")
-  MessageType: "Inventory";
-  @doc("Microsoft desginated supplier Id for the inventory related order (Purchase Order).")
-  SendingParty: string;
+namespace trim.middleware.api {
+  @route("inventory")
+  interface inventoryResource extends InventoryService {}
 }
 
-@doc("Inventory base properties.")
-model InventoryBase {
-  @doc("Unique quote Id provided by the supplier during contracting process.")
-  QuoteId: string;
-
-  @doc("Unique line level inventory reference quote Id provided by the supplier during contracting process.")
-  QuoteReferenceId: string;
-
-  @doc("Unique service id for the inventory. The combination of 'QuoteId', 'QuoteReferenceId' and 'ServiceId' needs to be unique.")
-  ServiceId: string;
-
-  @doc("Inventory specific servie type requested on original order (Purchase Order).")
-  ServiceType: "BulkCable" | "CrossConnect" | "DIA" | "LongHaulDarkFiber" | "LongHaulLIT" | "MetroDarkFiber" | "MetroLIT" | "RENT" | "POWER";
-}
-
-@doc("Inventory specific details.")
-model Inventory extends InventoryBase{
-  @doc("Ready for service date specific to the inventory item.")
-  RFSDate: plainDate;
-
-  @doc("Bandwidth value specific to the inventory item.")
-  Bandwidth?: string;
-
-  @doc("Transit network IP between IST and Microsoft.")
-  TransitNetworkISPandMSFT?: string;
-
-  @doc("Transit network mask.")
-  TransitNetworkMask?: string;
-
-  @doc("Circuit hands off media type.")
-  CktHandsOffMediaType?: string;
-
-  @doc("Microsoft address on transit network.")
-  MSFTAddressOnTransitNetwork?: string;
-
-  @doc("Default route on transit network.")
-  DefaultRouteOnTransitNetwork?: string;
-
-  @doc("Statically Rounded.")
-  StaticallyRounded?: string;
-
-  @doc("Inventory 'A' location details.")
-  ALocation? : InventoryLocation;
-
-  @doc("Inventory 'Z' location details.")
-  ZLocation? : InventoryLocation;
-
-}
-
-@doc("Inventory specific location details.")
-model InventoryLocation {
-  @doc("Location Port Details.")
-  Port : string;
-
-  @doc("Location Connector Details.")
-  Connector : string;
-
-  @doc("Location Panel Details.")
-  Panel : string;
-
-  @doc("Location Device Details.")
-  Device : string;
-
-  @doc("Location Rack Details.")
-  Rack : string;
-
-  @doc("Location Cage Details.")
-  Cage : string;
-
-  @doc("Location Room Details.")
-  Room : string;
-
-  @doc("Location Building Details.")
-  BuildingName : string;
-
-  @doc("Location Microsoft Datacenter Details.")
-  MSFTDCCode : string;
-}
-
-@error
-@doc("Error response")
-model Error {
-    @doc("A server-defined code that uniquely identifies the error.")
-    @header("x-ms-error-code")
-    code: string;
-    @doc("Top-level error object")
-    error: ErrorDetail;
-}
-
-@doc("Error details")
-model ErrorDetail {
-  @doc("A server-defined code that uniquely identifies the error.")
-  code: string;
-  @doc("A human-readable representation of the error.")
-  message: string;
-  @doc("An array of details about specific errors that led to this reported error.")
-  details?: ErrorDetail[];
-}
-
-model List<T> {
-    @doc("List of elements")
-    value: T[];
-    @doc("A link to the next page of results if present.")
-    nextLink?: url;
-}
-
-model Patch<T> {
-    @header contentType: "application/merge-patch+json";
-    ...T;
-}
-
-model ApiVersion {
-    @doc("The version of the API in the form YYYY-MM-DD")
-    @query("api-version") apiVersion: string;
-}
-
-interface ResourceInterface<T> {
-    @get list(...ApiVersion): List<T> | Error;
-    @get read(@path id: string, ...ApiVersion): T | Error;
-    @put create(...T, ...ApiVersion): T | Error;
-    @patch update(...Patch<T>, ...ApiVersion): T | Error;
-    //@delete delete(@path id: string, ...ApiVersion): void | Error;
-}
-
-@route("/Inventory")
-@tag("Inventory")
-interface IInventory extends ResourceInterface<Inventory> {
-    @route("/Decommission")
-    @post decommission(@path serviceId: string,...ApiVersion): void | Error;
+namespace trim.middleware.api {
+  @route("messaging")
+  interface messagingResource extends MessageService {}
 }

@@ -9,7 +9,7 @@
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-vscode.azurecli",
-				"42crunch.vscode-openapi"
+				"42crunch.vscode-openapi",
 			]
 		}
 	},

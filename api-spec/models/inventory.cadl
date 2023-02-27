@@ -1,0 +1,33 @@
+
+@doc("Inventory specific details.")
+model Inventory extends InventoryBase{
+  @doc("Ready for service date specific to the inventory item.")
+  RFSDate: plainDate;
+
+  @doc("Bandwidth value specific to the inventory item.")
+  Bandwidth?: string;
+
+  @doc("Transit network IP between IST and Microsoft.")
+  TransitNetworkISPandMSFT?: string;
+
+  @doc("Transit network mask.")
+  TransitNetworkMask?: string;
+
+  @doc("Circuit hands off media type.")
+  CktHandsOffMediaType?: string;
+
+  @doc("Microsoft address on transit network.")
+  MSFTAddressOnTransitNetwork?: string;
+
+  @doc("Default route on transit network.")
+  DefaultRouteOnTransitNetwork?: string;
+
+  @doc("Statically Rounded.")
+  StaticallyRounded?: string;
+
+  @doc("Inventory 'A' location details.")
+  ALocation? : InventoryLocation;
+
+  @doc("Inventory 'Z' location details.")
+  ZLocation? : InventoryLocation;
+}
