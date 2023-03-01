@@ -31,60 +31,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/InventoryPackage'
-    patch:
-      operationId: inventoryResource_update
-      description: >-
-        Update inventory. This operation allows non-mandatory field updates for
-        an existing inventory. Key inventory fields like (QuoteId,
-        QuoteReferenceId, ServiceId) cannot be updated using this operation.
-      parameters:
-        - $ref: '#/components/parameters/ApiVersion'
-      responses:
-        '202':
-          description: >-
-            The request has been accepted for processing, but processing has not
-            yet completed.
-        '400':
-          description: The server could not understand the request due to invalid syntax.
-        '401':
-          description: Access is unauthorized.
-        default:
-          description: An unexpected error response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InventoryPackageUpdate'
-  /inventory/decommission/{serviceId}:
-    post:
-      operationId: inventoryResource_decommission
-      description: Decommission inventory for a specific service id.
-      parameters:
-        - name: serviceId
-          in: path
-          required: true
-          schema:
-            type: string
-        - $ref: '#/components/parameters/ApiVersion'
-      responses:
-        '202':
-          description: >-
-            The request has been accepted for processing, but processing has not
-            yet completed.
-        '400':
-          description: The server could not understand the request due to invalid syntax.
-        '401':
-          description: Access is unauthorized.
-        default:
-          description: An unexpected error response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /inventory/requeststatus/{messageId}:
     get:
       operationId: inventoryResource_read
@@ -127,6 +73,8 @@ paths:
           description: The server could not understand the request due to invalid syntax.
         '401':
           description: Access is unauthorized.
+        '403':
+          description: Access is forbidden
         default:
           description: An unexpected error response.
           content:
@@ -160,6 +108,8 @@ paths:
           description: The server could not understand the request due to invalid syntax.
         '401':
           description: Access is unauthorized.
+        '403':
+          description: Access is forbidden
         default:
           description: An unexpected error response.
           content:
@@ -326,6 +276,9 @@ components:
     InventoryPackage:
       type: object
       properties:
+        Supplier:
+          type: string
+          description: Supplier Id.
         InventoryItems:
           type: array
           items:
@@ -336,103 +289,48 @@ components:
         Inventory Message comprised of message header and individual inventory
         items.
       required:
+        - Supplier
         - InventoryItems
-      allOf:
-        - $ref: '#/components/schemas/InventoryPackageBase'
-    InventoryPackageBase:
-      type: object
-      properties:
-        MessageId:
-          type: string
-          description: Unique Message Id. Used for all support/troubleshooting reasons.
-        MessageType:
-          type: string
-          enum:
-            - Inventory
-          description: Message type. Validated and used for internal system processing.
-        SendingParty:
-          type: string
-          description: >-
-            Microsoft desginated supplier Id for the inventory related order
-            (Purchase Order).
-      description: >-
-        Inventory Message comprised of message header and individual inventory
-        items.
-      required:
-        - MessageId
-        - MessageType
-        - SendingParty
-    InventoryPackageBaseUpdate:
-      type: object
-      properties:
-        MessageId:
-          type: string
-          description: Unique Message Id. Used for all support/troubleshooting reasons.
-        MessageType:
-          type: string
-          enum:
-            - Inventory
-          description: Message type. Validated and used for internal system processing.
-        SendingParty:
-          type: string
-          description: >-
-            Microsoft desginated supplier Id for the inventory related order
-            (Purchase Order).
-      description: >-
-        Inventory Message comprised of message header and individual inventory
-        items.
     InventoryPackageResponse:
       type: object
       properties:
+        Supplier:
+          type: string
+          description: Supplier Id.
         InventoryItems:
           type: array
           items:
             $ref: '#/components/schemas/InventoryResponse'
           x-cadl-name: InventoryResponse[]
           description: Inventory Items.
+        Processed:
+          type: boolean
+          description: Indicates if the package processing is completed.
+        Error:
+          allOf:
+            - $ref: '#/components/schemas/Error'
+          description: Messsage processing result.
       description: >-
         Inventory Message comprised of message header and individual inventory
         items.
       required:
+        - Supplier
         - InventoryItems
-      allOf:
-        - $ref: '#/components/schemas/InventoryPackageBase'
-    InventoryPackageResponseUpdate:
-      type: object
-      properties:
-        InventoryItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/InventoryResponse'
-          x-cadl-name: InventoryResponse[]
-          description: Inventory Items.
-      description: >-
-        Inventory Message comprised of message header and individual inventory
-        items.
-      allOf:
-        - $ref: '#/components/schemas/InventoryPackageBaseUpdate'
-    InventoryPackageUpdate:
-      type: object
-      properties:
-        InventoryItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/Inventory'
-          x-cadl-name: Inventory[]
-          description: Inventory Items.
-      description: >-
-        Inventory Message comprised of message header and individual inventory
-        items.
-      allOf:
-        - $ref: '#/components/schemas/InventoryPackageBaseUpdate'
+        - Processed
+        - Error
     InventoryResponse:
       type: object
       properties:
+        Processed:
+          type: boolean
+          description: Indicates if the package processing is completed.
         Error:
           allOf:
             - $ref: '#/components/schemas/Error'
           description: Inventory processing results.
       description: Inventory message processing result.
+      required:
+        - Processed
       allOf:
         - $ref: '#/components/schemas/Inventory'
     MessageRequest:
@@ -444,6 +342,9 @@ components:
         MessageType:
           type: string
           description: Message type. Validated and used for internal system processing.
+        Version:
+          type: string
+          description: Message Version. Useful for schema validations.
         RequestPayload:
           type: string
           description: Request message Content.
@@ -451,6 +352,7 @@ components:
       required:
         - MessageId
         - MessageType
+        - Version
         - RequestPayload
     MessageResponse:
       type: object
@@ -458,14 +360,9 @@ components:
         ResponsePayload:
           type: string
           description: Response message content.
-        Error:
-          allOf:
-            - $ref: '#/components/schemas/Error'
-          description: Messsage processing result.
       description: Message comprised of message header and individual inventory items.
       required:
         - ResponsePayload
-        - Error
       allOf:
         - $ref: '#/components/schemas/MessageRequest'
 servers:

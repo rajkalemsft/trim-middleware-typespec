@@ -3,6 +3,9 @@ import "./error.cadl";
 
 @doc("Inventory message processing result.")
 model InventoryResponse extends Inventory {
+  @doc("Indicates if the package processing is completed.")
+  Processed: boolean;
+  
   @doc("Inventory processing results.")
   Error? : Error;
 }

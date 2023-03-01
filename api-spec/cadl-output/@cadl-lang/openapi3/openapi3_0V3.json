@@ -1,0 +1,452 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Microsoft TRIM Inventory API specification.",
+    "version": "1.0.0",
+    "description": "Microsoft TRIM Inventory API specification."
+  },
+  "tags": [],
+  "paths": {
+    "/messaging/queuemessage": {
+      "post": {
+        "operationId": "messagingResource_queuemessage",
+        "description": "API endpoint performs required authorization, validates message payload schema per mssage type and respond in synchronous way indicating if the message was accepted or rejected for further processing.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "The request has been accepted for processing, but processing has not yet completed."
+          },
+          "400": {
+            "description": "The server could not understand the request due to invalid syntax."
+          },
+          "401": {
+            "description": "Access is unauthorized."
+          },
+          "403": {
+            "description": "Access is forbidden"
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/requeststatus/{messageId}": {
+      "get": {
+        "operationId": "messagingResource_read",
+        "description": "Get request status by uniqiue messag/correlation Id.",
+        "parameters": [
+          {
+            "name": "messageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/ApiVersion"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The server could not understand the request due to invalid syntax."
+          },
+          "401": {
+            "description": "Access is unauthorized."
+          },
+          "403": {
+            "description": "Access is forbidden"
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "ApiVersion": {
+        "name": "api-version",
+        "in": "query",
+        "required": true,
+        "description": "The version of the API in the form YYYY-MM-DD",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "A server-defined code that uniquely identifies the error."
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ErrorDetail"
+              }
+            ],
+            "description": "Top-level error object"
+          }
+        },
+        "description": "Error response",
+        "required": [
+          "code",
+          "error"
+        ]
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "A server-defined code that uniquely identifies the error."
+          },
+          "message": {
+            "type": "string",
+            "description": "A human-readable representation of the error."
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "x-cadl-name": "ErrorDetail[]",
+            "description": "An array of details about specific errors that led to this reported error."
+          }
+        },
+        "description": "Error details",
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "Inventory": {
+        "type": "object",
+        "properties": {
+          "RFSDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Ready for service date specific to the inventory item."
+          },
+          "Bandwidth": {
+            "type": "string",
+            "description": "Bandwidth value specific to the inventory item."
+          },
+          "TransitNetworkISPandMSFT": {
+            "type": "string",
+            "description": "Transit network IP between IST and Microsoft."
+          },
+          "TransitNetworkMask": {
+            "type": "string",
+            "description": "Transit network mask."
+          },
+          "CktHandsOffMediaType": {
+            "type": "string",
+            "description": "Circuit hands off media type."
+          },
+          "MSFTAddressOnTransitNetwork": {
+            "type": "string",
+            "description": "Microsoft address on transit network."
+          },
+          "DefaultRouteOnTransitNetwork": {
+            "type": "string",
+            "description": "Default route on transit network."
+          },
+          "StaticallyRounded": {
+            "type": "string",
+            "description": "Statically Rounded."
+          },
+          "ALocation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InventoryLocation"
+              }
+            ],
+            "description": "Inventory 'A' location details."
+          },
+          "ZLocation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InventoryLocation"
+              }
+            ],
+            "description": "Inventory 'Z' location details."
+          }
+        },
+        "description": "Inventory specific details.",
+        "required": [
+          "RFSDate"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/InventoryBase"
+          }
+        ]
+      },
+      "InventoryBase": {
+        "type": "object",
+        "properties": {
+          "QuoteId": {
+            "type": "string",
+            "description": "Unique quote Id provided by the supplier during contracting process."
+          },
+          "QuoteReferenceId": {
+            "type": "string",
+            "description": "Unique line level inventory reference quote Id provided by the supplier during contracting process."
+          },
+          "ServiceId": {
+            "type": "string",
+            "description": "Unique service id for the inventory. The combination of 'QuoteId', 'QuoteReferenceId' and 'ServiceId' needs to be unique."
+          },
+          "ServiceType": {
+            "type": "string",
+            "enum": [
+              "BulkCable",
+              "CrossConnect",
+              "DIA",
+              "LongHaulDarkFiber",
+              "LongHaulLIT",
+              "MetroDarkFiber",
+              "MetroLIT",
+              "RENT",
+              "POWER"
+            ],
+            "x-cadl-name": "BulkCable | CrossConnect | DIA | LongHaulDarkFiber | LongHaulLIT | MetroDarkFiber | MetroLIT | RENT | POWER",
+            "description": "Inventory specific servie type requested on original order (Purchase Order)."
+          }
+        },
+        "description": "Inventory base properties.",
+        "required": [
+          "QuoteId",
+          "QuoteReferenceId",
+          "ServiceId",
+          "ServiceType"
+        ]
+      },
+      "InventoryLocation": {
+        "type": "object",
+        "properties": {
+          "Port": {
+            "type": "string",
+            "description": "Location Port Details."
+          },
+          "Connector": {
+            "type": "string",
+            "description": "Location Connector Details."
+          },
+          "Panel": {
+            "type": "string",
+            "description": "Location Panel Details."
+          },
+          "Device": {
+            "type": "string",
+            "description": "Location Device Details."
+          },
+          "Rack": {
+            "type": "string",
+            "description": "Location Rack Details."
+          },
+          "Cage": {
+            "type": "string",
+            "description": "Location Cage Details."
+          },
+          "Room": {
+            "type": "string",
+            "description": "Location Room Details."
+          },
+          "BuildingName": {
+            "type": "string",
+            "description": "Location Building Details."
+          },
+          "MSFTDCCode": {
+            "type": "string",
+            "description": "Location Microsoft Datacenter Details."
+          }
+        },
+        "description": "Inventory specific location details."
+      },
+      "InventoryPackage": {
+        "type": "object",
+        "properties": {
+          "Supplier": {
+            "type": "string",
+            "description": "Supplier Id."
+          },
+          "InventoryItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Inventory"
+            },
+            "x-cadl-name": "Inventory[]",
+            "description": "Inventory Items."
+          }
+        },
+        "description": "Inventory Message comprised of message header and individual inventory items.",
+        "required": [
+          "Supplier",
+          "InventoryItems"
+        ]
+      },
+      "InventoryPackageResponse": {
+        "type": "object",
+        "properties": {
+          "Supplier": {
+            "type": "string",
+            "description": "Supplier Id."
+          },
+          "InventoryItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InventoryResponse"
+            },
+            "x-cadl-name": "InventoryResponse[]",
+            "description": "Inventory Items."
+          },
+          "Processed": {
+            "type": "boolean",
+            "description": "Indicates if the package processing is completed."
+          },
+          "Error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Error"
+              }
+            ],
+            "description": "Messsage processing result."
+          }
+        },
+        "description": "Inventory Message comprised of message header and individual inventory items.",
+        "required": [
+          "Supplier",
+          "InventoryItems",
+          "Processed",
+          "Error"
+        ]
+      },
+      "InventoryResponse": {
+        "type": "object",
+        "properties": {
+          "Processed": {
+            "type": "boolean",
+            "description": "Indicates if the package processing is completed."
+          },
+          "Error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Error"
+              }
+            ],
+            "description": "Inventory processing results."
+          }
+        },
+        "description": "Inventory message processing result.",
+        "required": [
+          "Processed"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Inventory"
+          }
+        ]
+      },
+      "MessageRequest": {
+        "type": "object",
+        "properties": {
+          "MessageId": {
+            "type": "string",
+            "description": "Unique message id. Used for all support/troubleshooting reasons."
+          },
+          "MessageType": {
+            "type": "string",
+            "description": "Message type. Validated and used for internal system processing."
+          },
+          "Version": {
+            "type": "string",
+            "description": "Message Version. Useful for schema validations."
+          },
+          "RequestPayload": {
+            "type": "string",
+            "description": "Request message Content."
+          }
+        },
+        "description": "Message comprised of message header and individual inventory items.",
+        "required": [
+          "MessageId",
+          "MessageType",
+          "Version",
+          "RequestPayload"
+        ]
+      },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "ResponsePayload": {
+            "type": "string",
+            "description": "Response message content."
+          }
+        },
+        "description": "Message comprised of message header and individual inventory items.",
+        "required": [
+          "ResponsePayload",
+          "Processed",
+          "Error"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MessageRequest"
+          }
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.trim.microsoft.com",
+      "description": "Microsoft TRIM API server.",
+      "variables": {}
+    }
+  ]
+}

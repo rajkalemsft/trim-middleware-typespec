@@ -15,8 +15,8 @@ interface ResourceInterface<T> {
     @doc("Create new inventory for the specific QuoteId and QuoteReferenceId.")
     @put create(...T, ...ApiVersion): AcceptedResponse | UnauthorizedResponse | BadRequestResponse | Error;
 
-    @doc("Update inventory. This operation allows non-mandatory field updates for an existing inventory. Key inventory fields like (QuoteId, QuoteReferenceId, ServiceId) cannot be updated using this operation.")
-    @patch update(...T, ...ApiVersion):  AcceptedResponse | UnauthorizedResponse | BadRequestResponse | Error;
+    //@doc("Update inventory. This operation allows non-mandatory field updates for an existing inventory. Key inventory fields like (QuoteId, QuoteReferenceId, ServiceId) cannot be updated using this operation.")
+    //@patch update(...T, ...ApiVersion):  AcceptedResponse | UnauthorizedResponse | BadRequestResponse | Error;
 }
 
 
@@ -27,7 +27,7 @@ interface InventoryService extends ResourceInterface<InventoryPackage> {
     @route("/requeststatus")
     @get read(@path messageId: string, ...ApiVersion): InventoryPackageResponse | Error;
 
-    @doc("Decommission inventory for a specific service id.")
-    @route("/decommission")
-    @post decommission(@path serviceId: string,...ApiVersion): AcceptedResponse | UnauthorizedResponse | BadRequestResponse | Error;
+    //@doc("Decommission inventory for a specific service id.")
+    //@route("/decommission")
+    //@post decommission(@path serviceId: string,...ApiVersion): AcceptedResponse | UnauthorizedResponse | BadRequestResponse | Error;
 }

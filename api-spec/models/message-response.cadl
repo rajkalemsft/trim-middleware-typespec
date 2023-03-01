@@ -5,6 +5,4 @@ import "./error.cadl";
 model MessageResponse extends MessageRequest{
   @doc("Response message content.")
   ResponsePayload: string;
-  @doc("Messsage processing result.")
-  Error: Error;
 }

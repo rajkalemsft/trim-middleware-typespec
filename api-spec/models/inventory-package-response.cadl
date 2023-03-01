@@ -1,7 +1,16 @@
 import "./inventory-response.cadl";
 
 @doc("Inventory Message comprised of message header and individual inventory items.")
-model InventoryPackageResponse extends InventoryPackageBase {
+model InventoryPackageResponse {
+  @doc("Supplier Id.")
+  Supplier : string;
+
   @doc("Inventory Items.")
   InventoryItems : InventoryResponse[];
+
+  @doc("Indicates if the package processing is completed.")
+  Processed: boolean;
+
+  @doc("Messsage processing result.")
+  Error: Error;
 }

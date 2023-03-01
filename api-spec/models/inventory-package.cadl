@@ -1,7 +1,8 @@
-import "./inventory-package-base.cadl";
-
 @doc("Inventory Message comprised of message header and individual inventory items.")
-model InventoryPackage extends InventoryPackageBase { 
+model InventoryPackage { 
+  @doc("Supplier Id.")
+  Supplier : string;
+
   @doc("Inventory Items.")
   InventoryItems : Inventory[];
 }
