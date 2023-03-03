@@ -1,8 +1,12 @@
+import "./errordetail.cadl";
+
 @error
 @doc("Error response")
 model Error {
     @doc("A server-defined code that uniquely identifies the error.")
-    code: string;
-    @doc("Top-level error object")
-    error: ErrorDetail;
+    Code: string;
+    @doc("A human-readable representation of the error.")
+    Message: string;
+    @doc("An array of details about specific errors that led to this reported error.")
+    Details?: ErrorDetail[];
 }

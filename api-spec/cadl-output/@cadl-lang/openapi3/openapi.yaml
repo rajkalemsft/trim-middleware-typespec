@@ -31,6 +31,38 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/InventoryPackage'
+  /inventory/decommission:
+    post:
+      operationId: inventoryResource_decommission
+      description: Decommission inventory for a specific service id.
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryDecommPackageResponse'
+        '202':
+          description: >-
+            The request has been accepted for processing, but processing has not
+            yet completed.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '401':
+          description: Access is unauthorized.
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryDecommPackage'
   /inventory/requeststatus/{messageId}:
     get:
       operationId: inventoryResource_read
@@ -49,6 +81,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InventoryPackageResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+        '401':
+          description: Access is unauthorized.
         default:
           description: An unexpected error response.
           content:
@@ -129,27 +165,37 @@ components:
     Error:
       type: object
       properties:
-        code:
+        Code:
           type: string
           description: A server-defined code that uniquely identifies the error.
-        error:
-          allOf:
-            - $ref: '#/components/schemas/ErrorDetail'
-          description: Top-level error object
+        Message:
+          type: string
+          description: A human-readable representation of the error.
+        Details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          x-cadl-name: ErrorDetail[]
+          description: >-
+            An array of details about specific errors that led to this reported
+            error.
       description: Error response
       required:
-        - code
-        - error
+        - Code
+        - Message
     ErrorDetail:
       type: object
       properties:
-        code:
+        Code:
           type: string
           description: A server-defined code that uniquely identifies the error.
-        message:
+        Message:
           type: string
           description: A human-readable representation of the error.
-        details:
+        Target:
+          type: string
+          description: Target field.
+        Details:
           type: array
           items:
             $ref: '#/components/schemas/ErrorDetail'
@@ -159,8 +205,9 @@ components:
             error.
       description: Error details
       required:
-        - code
-        - message
+        - Code
+        - Message
+        - Target
     Inventory:
       type: object
       properties:
@@ -242,6 +289,113 @@ components:
         - QuoteReferenceId
         - ServiceId
         - ServiceType
+    InventoryDecommPackage:
+      type: object
+      properties:
+        Supplier:
+          type: string
+          description: Supplier Id.
+        InventoryItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryDecommission'
+          x-cadl-name: InventoryDecommission[]
+          description: Inventory Items to decomm.
+      description: >-
+        Inventory Decomissioning Message comprised of message header and
+        individual inventory items.
+      required:
+        - Supplier
+        - InventoryItems
+    InventoryDecommPackageResponse:
+      type: object
+      properties:
+        Supplier:
+          type: string
+          description: Supplier Id.
+        InventoryItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryDecommissionResponse'
+          x-cadl-name: InventoryDecommissionResponse[]
+          description: Inventory Items to decomm.
+        Processed:
+          type: boolean
+          description: Indicates if the package processing is completed.
+        Error:
+          allOf:
+            - $ref: '#/components/schemas/Error'
+          description: Messsage processing result.
+      description: >-
+        Inventory Decomissioning Message comprised of message header and
+        individual inventory items.
+      required:
+        - Supplier
+        - InventoryItems
+        - Processed
+        - Error
+    InventoryDecommission:
+      type: object
+      properties:
+        ServiceId:
+          type: string
+          description: >-
+            Unique service id for the inventory. The combination of 'QuoteId',
+            'QuoteReferenceId' and 'ServiceId' needs to be unique.
+        ServiceType:
+          type: string
+          enum:
+            - BulkCable
+            - CrossConnect
+            - DIA
+            - LongHaulDarkFiber
+            - LongHaulLIT
+            - MetroDarkFiber
+            - MetroLIT
+            - RENT
+            - POWER
+          x-cadl-name: >-
+            BulkCable | CrossConnect | DIA | LongHaulDarkFiber | LongHaulLIT |
+            MetroDarkFiber | MetroLIT | RENT | POWER
+          description: >-
+            Inventory specific servie type requested on original order (Purchase
+            Order).
+        Date:
+          type: string
+          format: date
+          description: Date requested for decomission.
+        TransitNetworkISPandMSFT:
+          type: string
+          description: Transit network IP between IST and Microsoft.
+        MSFTAddressOnTransitNetwork:
+          type: string
+          description: Microsoft address on transit network.
+        DefaultRouteOnTransitNetwork:
+          type: string
+          description: Default route on transit network.
+        StaticallyRounded:
+          type: string
+          description: Statically Rounded.
+      description: Inventory specific details.
+      required:
+        - ServiceId
+        - ServiceType
+        - Date
+    InventoryDecommissionResponse:
+      type: object
+      properties:
+        Processed:
+          type: boolean
+          description: Indicates if the package processing is completed.
+        Error:
+          allOf:
+            - $ref: '#/components/schemas/Error'
+          description: Inventory processing results.
+      description: Inventory specific details.
+      required:
+        - Processed
+      allOf:
+        - $ref: '#/components/schemas/InventoryDecommission'
     InventoryLocation:
       type: object
       properties:

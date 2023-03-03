@@ -1,0 +1,11 @@
+import "./inventory-decomm.cadl";
+import "./error.cadl";
+
+@doc("Inventory specific details.")
+model InventoryDecommissionResponse extends InventoryDecommission{
+  @doc("Indicates if the package processing is completed.")
+  Processed: boolean;
+  
+  @doc("Inventory processing results.")
+  Error? : Error;
+}

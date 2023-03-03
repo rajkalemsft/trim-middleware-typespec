@@ -1,0 +1,16 @@
+import "./inventory-decomm-response.cadl";
+
+@doc("Inventory Decomissioning Message comprised of message header and individual inventory items.")
+model InventoryDecommPackageResponse  { 
+  @doc("Supplier Id.")
+  Supplier : string;
+
+  @doc("Inventory Items to decomm.")
+  InventoryItems : InventoryDecommissionResponse[];
+
+  @doc("Indicates if the package processing is completed.")
+  Processed: boolean;
+
+  @doc("Messsage processing result.")
+  Error: Error;
+}

@@ -1,9 +1,11 @@
 @doc("Error details")
 model ErrorDetail {
   @doc("A server-defined code that uniquely identifies the error.")
-  code: string;
+  Code: string;
   @doc("A human-readable representation of the error.")
-  message: string;
+  Message: string;
+  @doc("Target field.")
+  Target: string;
   @doc("An array of details about specific errors that led to this reported error.")
-  details?: ErrorDetail[];
+  Details?: ErrorDetail[];
 }

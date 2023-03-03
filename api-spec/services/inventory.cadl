@@ -6,6 +6,8 @@ import "../models/inventory.cadl";
 import "../models/apiversion.cadl";
 import "../models/error.cadl";
 import "../models/errordetail.cadl";
+import "../models/inventory-decomm-package.cadl";
+import "../models/inventory-decomm-package-response.cadl";
 
 using Cadl.Http;
 namespace trim.middleware.inventory;
@@ -25,9 +27,9 @@ interface ResourceInterface<T> {
 interface InventoryService extends ResourceInterface<InventoryPackage> {
     @doc("Get request status by uniqiue messag/correlation Id.")
     @route("/requeststatus")
-    @get read(@path messageId: string, ...ApiVersion): InventoryPackageResponse | Error;
+    @get read(@path messageId: string, ...ApiVersion): InventoryPackageResponse | UnauthorizedResponse | BadRequestResponse | Error;
 
-    //@doc("Decommission inventory for a specific service id.")
-    //@route("/decommission")
-    //@post decommission(@path serviceId: string,...ApiVersion): AcceptedResponse | UnauthorizedResponse | BadRequestResponse | Error;
+    @doc("Decommission inventory for a specific service id.")
+    @route("/decommission")
+    @post decommission(...InventoryDecommPackage,...ApiVersion): InventoryDecommPackageResponse | AcceptedResponse | UnauthorizedResponse | BadRequestResponse | Error;
 }

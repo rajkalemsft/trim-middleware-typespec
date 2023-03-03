@@ -1,0 +1,23 @@
+@doc("Inventory specific details.")
+model InventoryDecommission{
+  @doc("Unique service id for the inventory. The combination of 'QuoteId', 'QuoteReferenceId' and 'ServiceId' needs to be unique.")
+  ServiceId: string;
+
+  @doc("Inventory specific servie type requested on original order (Purchase Order).")
+  ServiceType: "BulkCable" | "CrossConnect" | "DIA" | "LongHaulDarkFiber" | "LongHaulLIT" | "MetroDarkFiber" | "MetroLIT" | "RENT" | "POWER";
+
+  @doc("Date requested for decomission.")
+  Date: plainDate;
+
+  @doc("Transit network IP between IST and Microsoft.")
+  TransitNetworkISPandMSFT?: string;
+
+  @doc("Microsoft address on transit network.")
+  MSFTAddressOnTransitNetwork?: string;
+
+  @doc("Default route on transit network.")
+  DefaultRouteOnTransitNetwork?: string;
+
+  @doc("Statically Rounded.")
+  StaticallyRounded?: string;
+}

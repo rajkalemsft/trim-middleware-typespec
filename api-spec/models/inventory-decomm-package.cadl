@@ -1,0 +1,10 @@
+import "./inventory-decomm.cadl";
+
+@doc("Inventory Decomissioning Message comprised of message header and individual inventory items.")
+model InventoryDecommPackage  { 
+  @doc("Supplier Id.")
+  Supplier : string;
+
+  @doc("Inventory Items to decomm.")
+  InventoryItems : InventoryDecommission[];
+}
