@@ -1,0 +1,34 @@
+{
+  "InvoiceNumber": "INV-2023-001",
+  "VendorInvoiceNumber": "V-INV-2023-001",
+  "InvoiceDate": "2023-06-12",
+  "InvoiceDueDate": "2023-06-28",
+  "PONumber": "PO-2023-001",
+  "VendorName": "ABC Company",
+  "VendorNumber": "ABC Company",
+  "ApprovalStatus": "Approved",
+  "ApprovalDate": "2023-06-14",
+  "items": [
+    {
+      "POLineItem": "10",
+      "item": "Product A",
+      "quantity": 2,
+      "unit_price": 10.00
+    },
+    {
+      "POLineItem": "20",
+      "item": "Product B",
+      "quantity": 3,
+      "unit_price": 15.00
+    },
+    {
+      "POLineItem": "30",
+      "item": "Product C",
+      "quantity": 1,
+      "unit_price": 20.00
+    }
+  ],
+  "subtotal": 85.00,
+  "tax": 5.95,
+  "total": 90.95
+}

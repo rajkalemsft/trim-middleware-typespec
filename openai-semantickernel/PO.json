@@ -1,0 +1,32 @@
+{
+  "PONumber": "PO-2023-001",
+  "PurchaseOrderDate": "2023-06-10",
+  "CompanyCode": "1234",
+  "VendorNumber": "V-100",
+  "VendorName": "ABC Supplier",
+  "items": [
+    {
+      "POLineNumber": "10",
+      "item": "Product A",
+      "quantity": 100,
+      "unit_price": 10.00
+    },
+    {
+      "POLineNumber": "20",
+      "item": "Product B",
+      "quantity": 50,
+      "unit_price": 15.00
+    },
+    {
+      "POLineNumber": "30",
+      "item": "Product C",
+      "quantity": 20,
+      "unit_price": 20.00
+    }
+  ],
+  "subtotal": 1800.00,
+  "tax": 126.00,
+  "total": 1926.00,
+  "payment_terms": "Net 30",
+  "additional_notes": "Please ensure timely delivery. Thank you."
+}

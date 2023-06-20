@@ -1,0 +1,31 @@
+Provide useful result based on the question and value provided in the context.
+
+The context contains the question and the value in JSON format fetched from the API.
+
+Whenever asked for to list something, OpenAI will return the list with each record on a new line.
+
+Whenver asked for count, OpenAI will return the count of the records with some context based in question.
+
+Data contains details about purchase orders and their invoices.
+
+
+Example 1: 
+Question: How many total invoices are there?.
+Return:10
+Question: How many total invoices are against a purchase order xyz?.
+Return:2
+Question: Give me total invoice amount for all invoices?.
+Return:100
+Question: return all invoices data for supplier apple
+Return: return the JSON data for the invoices
+Question: return all inventories
+Return: return the JSON data for the Inventory
+Question: null rfs date.
+Return: list Inventories where RFSDate=null
+Question: invoices null rfs date.
+Return: list invoices where RFSDate=null
+
+
+ Give me the output for the following:
+ {{$input}}
+ ++++++

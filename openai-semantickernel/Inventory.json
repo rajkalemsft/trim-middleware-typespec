@@ -1,0 +1,53 @@
+{
+  "InvoiceNumber": "INV-2023-001",
+  "VendorInvoiceNumber": "V-INV-2023-001",
+  "InvoiceDate": "2023-06-12",
+  "InvoiceDueDate": "2023-06-28",
+  "PONumber": "PO-2023-001",
+  "Supplier": "ABC Company",
+  "ApprovalStatus": "Approved",
+  "ApprovalDate": "2023-06-14",
+  "bill_to": {
+    "customer_name": "John Smith",
+    "address": "123 Main Street",
+    "city": "Anytown",
+    "state": "AnyState",
+    "zip_code": "12345"
+  },
+  "ship_to": {
+    "customer_name": "John Smith",
+    "address": "123 Main Street",
+    "city": "Anytown",
+    "state": "AnyState",
+    "zip_code": "12345"
+  },
+  "items": [
+    {
+      "POLineItem": "10",
+      "item": "Product A",
+      "quantity": 2,
+      "unit_price": 10.00
+    },
+    {
+      "POLineItem": "20",
+      "item": "Product B",
+      "quantity": 3,
+      "unit_price": 15.00
+    },
+    {
+      "POLineItem": "30",
+      "item": "Product C",
+      "quantity": 1,
+      "unit_price": 20.00
+    }
+  ],
+  "subtotal": 85.00,
+  "tax": 5.95,
+  "total": 90.95,
+  "payment_information": {
+    "payment_method": "Credit Card",
+    "card_type": "Visa",
+    "card_number": "XXXX-XXXX-XXXX-1234",
+    "expiration_date": "05/25"
+  }
+}
